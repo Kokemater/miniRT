@@ -5,7 +5,7 @@ OBJ = $(SRC:.c=.o)
 NAME = minirt
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g3 -std=c99
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g3 -std=gnu11
 
 LIBFTDIR = libs/libft
 LIBFT = $(LIBFTDIR)/libft.a
