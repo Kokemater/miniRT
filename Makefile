@@ -5,6 +5,7 @@ SRC = main.c\
 	  parse_arrays.c\
 	  arrays.c\
 	  error.c\
+	  image.c\
 	  v3.c
 
 OBJ = $(SRC:.c=.o)

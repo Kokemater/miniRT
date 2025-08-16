@@ -79,9 +79,39 @@ void	state_print(t_state *s)
 
 int loop(void *param)
 {
-    t_state *state = (t_state *)param;
-	(void)state;
+    t_state *s = (t_state *)param;
+
+	s->c.r++;
+	if (s->c.r % 2 == 0)
+		s->c.g++;
+	if (s->c.r % 3 == 0)
+		s->c.b++;
+	for (int x = 0; x < WIN_WIDTH; ++x)
+	{
+		for (int y = 0; y < WIN_HEIGHT; ++y)
+		{
+			img_put_pixel(&s->img, x, y, s->c);
+		}
+	}
+
+	mlx_put_image_to_window(s->mlx, s->win, s->img.handle, 0, 0); 
     return (0);
+}
+
+int	close_event(void *param)
+{
+	minirt_cleanup((t_state *)param);
+	exit(0);
+}
+
+int	key_event(int keycode, void *param)
+{
+	if (keycode == KEY_ESC)
+	{
+		minirt_cleanup((t_state *)param);
+		exit(0);
+	}
+	return (0);
 }
 
 int main(int argc, char *argv[])
@@ -104,9 +134,14 @@ int main(int argc, char *argv[])
     if (!state.mlx)
 		minirt_error(&state, "Could not initialize minilibx\n");
 
-    state.win = mlx_new_window(state.mlx, 800, 600, "miniRT");
+    state.win = mlx_new_window(state.mlx, WIN_WIDTH, WIN_HEIGHT, "miniRT");
     if (!state.win)
 		minirt_error(&state, "Could not create window\n");
+
+	minirt_create_img(&state);
+
+	mlx_hook(state.win, 17, 0, close_event, &state);
+	mlx_key_hook(state.win, key_event, &state);
 
     mlx_loop_hook(state.mlx, loop, &state);
     mlx_loop(state.mlx);

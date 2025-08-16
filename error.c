@@ -2,17 +2,20 @@
 
 void	minirt_cleanup(t_state *state)
 {
-	if (!state->mlx)
-		return ;
-	if (state->win)
-		mlx_destroy_window(state->mlx, state->win);
-	mlx_destroy_display(state->mlx);
+	(void)state;
 	if (state->spheres.arr)
 		free(state->spheres.arr);
 	if (state->planes.arr)
-		free(state->spheres.arr);
+		free(state->planes.arr);
 	if (state->cylinders.arr)
-		free(state->spheres.arr);
+		free(state->cylinders.arr);
+	if (!state->mlx)
+		return ;
+	if (state->img.handle)
+		mlx_destroy_image(state->mlx, state->img.handle);
+	if (state->win)
+		mlx_destroy_window(state->mlx, state->win);
+	mlx_destroy_display(state->mlx);
 	free(state->mlx);
 }
 

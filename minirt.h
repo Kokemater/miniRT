@@ -10,6 +10,11 @@
 # include "libs/minilibx-linux/mlx.h"
 # include "libs/libft/libft.h"
 
+# define WIN_WIDTH  800
+# define WIN_HEIGHT 600
+
+# define KEY_ESC 65307
+
 typedef struct s_vec3
 {
 	float	x;
@@ -89,6 +94,15 @@ typedef struct s_cylinder_arr
 	unsigned int	cap;
 }	t_cylinder_arr;
 
+typedef struct s_image
+{
+	void	*handle;
+	char	*addr;
+	int		bpp;
+	int		line_length;
+	int		endian;
+}	t_image;
+
 typedef struct s_state
 {
 	t_ambient		ambient;
@@ -97,8 +111,10 @@ typedef struct s_state
 	t_sphere_arr	spheres;
 	t_plane_arr		planes;
 	t_cylinder_arr	cylinders;
+    t_image    		img;
     void    		*mlx;
     void    		*win;
+	t_color			c;
 }   t_state;
 
 
@@ -125,6 +141,10 @@ void	parse_cylinder(t_state *state, char *line);
 void	sphere_arr_add(t_state *s, t_sphere n);
 void	plane_arr_add(t_state *s, t_plane n);
 void	cylinder_arr_add(t_state *s, t_cylinder n);
+
+void	minirt_create_img(t_state *state);
+void	img_put_pixel(t_image *img, unsigned int x, unsigned int y,
+		t_color color);
 
 float	v3dot(t_vec3 a, t_vec3 b);
 
