@@ -11,3 +11,14 @@ void	parse_sphere(t_state *state, char *line)
 	sphere_arr_add(state, sp);
 }
 
+void	parse_plane(t_state *state, char *line)
+{
+	t_plane	pl;
+
+	line += 2;
+	pl.pos = parse_vec3(state, &line);
+	pl.normal = parse_vec3(state, &line);
+	pl.color = parse_color(state, &line);
+	plane_arr_add(state, pl);
+}
+

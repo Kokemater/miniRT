@@ -38,6 +38,8 @@ int	parse_file(t_state *state, int fd)
 			parse_light(state, line);
 		else if (line[0] == 's' && line[1] == 'p' && ft_isspace(line[2]))
 			parse_sphere(state, line);
+		else if (line[0] == 'p' && line[1] == 'l' && ft_isspace(line[2]))
+			parse_plane(state, line);
 		free(line);
 		line = get_next_line(fd);
 	}

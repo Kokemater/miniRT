@@ -52,6 +52,13 @@ typedef struct s_sphere
 	t_color	color;
 }	t_sphere;
 
+typedef struct s_plane
+{
+	t_vec3	pos;
+	t_vec3	normal;
+	t_color	color;
+}	t_plane;
+
 typedef struct s_sphere_arr
 {
 	t_sphere		*arr;
@@ -59,12 +66,20 @@ typedef struct s_sphere_arr
 	unsigned int	cap;
 }	t_sphere_arr;
 
+typedef struct s_plane_arr
+{
+	t_plane			*arr;
+	unsigned int	count;
+	unsigned int	cap;
+}	t_plane_arr;
+
 typedef struct s_state
 {
 	t_ambient		ambient;
 	t_camera		camera;
 	t_light			light;
 	t_sphere_arr	spheres;
+	t_plane_arr		planes;
     void    		*mlx;
     void    		*win;
 }   t_state;
@@ -87,8 +102,10 @@ void	parse_camera(t_state *state, char *line);
 void	parse_light(t_state *state, char *line);
 
 void	parse_sphere(t_state *state, char *line);
+void	parse_plane(t_state *state, char *line);
 
 void	sphere_arr_add(t_state *s, t_sphere n);
+void	plane_arr_add(t_state *s, t_plane n);
 
 float	v3dot(t_vec3 a, t_vec3 b);
 
