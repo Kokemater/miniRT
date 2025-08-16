@@ -38,3 +38,21 @@ void	plane_arr_add(t_state *s, t_plane n)
 	++s->planes.count;
 }
 
+void	cylinder_arr_add(t_state *s, t_cylinder n)
+{
+	t_cylinder	*tmp;
+
+	if (s->cylinders.count == s->cylinders.cap)
+	{
+		s->cylinders.cap = s->cylinders.cap * 2 + 1;
+		tmp = malloc(sizeof(t_cylinder) * s->cylinders.cap);
+		if (!tmp)
+			minirt_error(s, "Out of memory\n");
+		ft_memcpy(tmp, s->cylinders.arr, sizeof(t_cylinder) * s->cylinders.count);
+		if (s->cylinders.arr)
+			free(s->cylinders.arr);
+		s->cylinders.arr = tmp;
+	}
+	s->cylinders.arr[s->cylinders.count] = n;
+	++s->cylinders.count;
+}

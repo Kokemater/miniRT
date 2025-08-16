@@ -17,8 +17,20 @@ void	parse_plane(t_state *state, char *line)
 
 	line += 2;
 	pl.pos = parse_vec3(state, &line);
-	pl.normal = parse_vec3(state, &line);
+	pl.normal = parse_orientation(state, &line);
 	pl.color = parse_color(state, &line);
 	plane_arr_add(state, pl);
 }
 
+void	parse_cylinder(t_state *state, char *line)
+{
+	t_cylinder	cy;
+
+	line += 2;
+	cy.pos = parse_vec3(state, &line);
+	cy.fwd = parse_orientation(state, &line);
+	cy.d = parse_range_float(state, &line, 0.f, INFINITY);
+	cy.h = parse_range_float(state, &line, 0.f, INFINITY);
+	cy.color = parse_color(state, &line);
+	cylinder_arr_add(state, cy);
+}

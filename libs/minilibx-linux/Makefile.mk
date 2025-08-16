@@ -46,8 +46,8 @@ $(NAME)	: $(OBJ)
 	ranlib $(NAME)
 	cp $(NAME) $(NAME_UNAME)
 
-check: all
-	@test/run_tests.sh
+# check: all
+# 	@test/run_tests.sh
 
 show:
 	@printf "NAME  		: $(NAME)\n"

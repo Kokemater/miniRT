@@ -30,16 +30,23 @@ int	parse_file(t_state *state, int fd)
 	line = get_next_line(fd);
 	while (line)
 	{
-		if (line[0] == 'A' && ft_isspace(line[1]))
+		if (ft_strncmp("A ", line, 2) == 0)
 			parse_ambient(state, line);
-		else if (line[0] == 'C' && ft_isspace(line[1]))
+		else if (ft_strncmp("C ", line, 2) == 0)
 			parse_camera(state, line);
-		else if (line[0] == 'L' && ft_isspace(line[1]))
+		else if (ft_strncmp("L ", line, 2) == 0)
 			parse_light(state, line);
-		else if (line[0] == 's' && line[1] == 'p' && ft_isspace(line[2]))
+		else if (ft_strncmp("sp ", line, 3) == 0)
 			parse_sphere(state, line);
-		else if (line[0] == 'p' && line[1] == 'l' && ft_isspace(line[2]))
+		else if (ft_strncmp("pl ", line, 3) == 0)
 			parse_plane(state, line);
+		else if (ft_strncmp("cy ", line, 3) == 0)
+			parse_cylinder(state, line);
+		else if (line[0] && line[0] != '\n')
+		{
+			free(line);
+			minirt_error(state, "Invalid scene object\n");
+		}
 		free(line);
 		line = get_next_line(fd);
 	}

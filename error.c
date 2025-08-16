@@ -9,6 +9,10 @@ void	minirt_cleanup(t_state *state)
 	mlx_destroy_display(state->mlx);
 	if (state->spheres.arr)
 		free(state->spheres.arr);
+	if (state->planes.arr)
+		free(state->spheres.arr);
+	if (state->cylinders.arr)
+		free(state->spheres.arr);
 	free(state->mlx);
 }
 

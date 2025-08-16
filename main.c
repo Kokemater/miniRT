@@ -45,6 +45,36 @@ void	state_print(t_state *s)
 		printf("\n");
 		++i;
 	}
+	printf("\n[PLANES]\n");
+	i = 0;
+	while (i < s->planes.count)
+	{
+		printf("%i:\n", i);
+		printf("position: ");
+		v3_print(s->planes.arr[i].pos);
+		printf("\nnormal: ");
+		v3_print(s->planes.arr[i].normal);
+		printf("\ncolor: ");
+		color_print(s->planes.arr[i].color);
+		printf("\n");
+		++i;
+	}
+	printf("\n[CYLINDERS]\n");
+	i = 0;
+	while (i < s->cylinders.count)
+	{
+		printf("%i:\n", i);
+		printf("position: ");
+		v3_print(s->cylinders.arr[i].pos);
+		printf("\nforward: ");
+		v3_print(s->cylinders.arr[i].fwd);
+		printf("\ndiameter: %f", s->cylinders.arr[i].d);
+		printf("\nheight: %f", s->cylinders.arr[i].h);
+		printf("\ncolor: ");
+		color_print(s->cylinders.arr[i].color);
+		printf("\n");
+		++i;
+	}
 }
 
 int loop(void *param)
@@ -81,5 +111,6 @@ int main(int argc, char *argv[])
     mlx_loop_hook(state.mlx, loop, &state);
     mlx_loop(state.mlx);
 
+	minirt_cleanup(&state);
     return (0);
 }
