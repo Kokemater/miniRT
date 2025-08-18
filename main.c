@@ -101,36 +101,26 @@ t_color ray_color(t_ray *ray, t_state *state)
 
 int loop(t_state *s)
 {
-	t_color c;
-	t_ray	r;
-
-	t_vec3 up;
-	t_vec3 right;
-	t_vec3 current;
+	int	x;
+	int	y;
+	t_vec3	q;
 	
-	right = v3cross((t_vec3){0, 1, 0},s->camera.fwd);
-	up  = v3cross(right,s->camera.fwd);
-	t_vec3 q = v3add(
-		s->camera.pos, 
-		v3add(
-			s->camera.fwd,
-			v3add (
-				v3mulf(up, -s->camera.vh/2.f),
-				v3mulf(right, -s->camera.vw/2.f)
-			))
-		);
-	for (int y = 0; y < WIN_HEIGHT; ++y)
+	q = v3add(s->camera.pos, s->camera.fwd);
+	y = 0;
+	while (y < WIN_HEIGHT)
 	{
-		t_vec3 dy = v3mulf(up, s->camera.vh / (float) WIN_HEIGHT * y);
-		for (int x = 0; x < WIN_WIDTH; ++x)
+		x = 0;
+		t_vec3 dy = v3mulf(s->camera.up, s->camera.vh * (y / (float)WIN_HEIGHT - .5f));
+		while (x < WIN_WIDTH)
 		{
-			t_vec3 dx = v3mulf(right, s->camera.vw / (float) WIN_WIDTH * x);
-			current = v3add(q, v3add(dx, dy));
-			r.or = s->camera.pos;
-			r.dir = v3normalize(v3sub(current, r.or));
-			c = ray_color(&r, s);
-			img_put_pixel(&s->img, x, y, c);
+			t_vec3 dx = v3mulf(s->camera.right, s->camera.vw * (x / (float)WIN_WIDTH - .5f));
+			img_put_pixel(&s->img, x, y, ray_color(&(t_ray){
+					.or  = s->camera.pos,
+					.dir = v3normalize(v3sub(v3add(q, v3add(dx, dy)), s->camera.pos))
+				}, s));
+			++x;
 		}
+		++y;
 	}
 
 	mlx_put_image_to_window(s->mlx, s->win, s->img.handle, 0, 0); 
@@ -186,6 +176,8 @@ int main(int argc, char *argv[])
 
 	state.camera.vw = 2 * tanf(state.camera.fov / 2.f);
 	state.camera.vh = state.camera.vw / ((float) WIN_WIDTH / (float) WIN_HEIGHT);
+	state.camera.right = v3cross((t_vec3){0, 1, 0}, state.camera.fwd);
+	state.camera.up  = v3cross(state.camera.right, state.camera.fwd);
 	mlx_loop(state.mlx);
 
 	minirt_cleanup(&state);

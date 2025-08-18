@@ -53,6 +53,8 @@ typedef struct s_camera
 {
 	t_vec3	pos;
 	t_vec3	fwd;
+	t_vec3	up;
+	t_vec3	right;
 	float	fov;
 	float	vw;
 	float	vh;
