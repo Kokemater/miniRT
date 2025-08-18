@@ -28,19 +28,19 @@ typedef struct s_ray
 	t_vec3	dir;
 }	t_ray;
 
+typedef struct s_hit_result
+{
+	t_vec3	p;
+	t_vec3	n;
+	float	t;
+}	t_hit_result;
+
 typedef struct s_color
 {
 	unsigned char	r;
 	unsigned char	g;
 	unsigned char	b;
 }	t_color;
-
-typedef struct s_sphere
-{
-	t_vec3 center;
-	t_color color;
-	float	r;
-} t_sphere;
 
 typedef struct s_ambient
 {
@@ -65,7 +65,7 @@ typedef struct s_light
 typedef struct s_sphere
 {
 	t_vec3	pos;
-	float	d;
+	float	r;
 	t_color	color;
 }	t_sphere;
 
@@ -126,7 +126,7 @@ typedef struct s_state
     t_image    		img;
     void    		*mlx;
     void    		*win;
-	t_color			c;
+	float			angle;
 }   t_state;
 
 
