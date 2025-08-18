@@ -6,6 +6,9 @@ SRC = main.c\
 	  arrays.c\
 	  error.c\
 	  image.c\
+	  intersections.c\
+	  v3math.c\
+	  color.c\
 	  v3.c
 
 OBJ = $(SRC:.c=.o)

@@ -28,19 +28,20 @@ typedef struct s_ray
 	t_vec3	dir;
 }	t_ray;
 
-typedef struct s_hit_result
-{
-	t_vec3	p;
-	t_vec3	n;
-	float	t;
-}	t_hit_result;
-
 typedef struct s_color
 {
 	unsigned char	r;
 	unsigned char	g;
 	unsigned char	b;
 }	t_color;
+
+typedef struct s_hit_result
+{
+	t_vec3	p;
+	t_vec3	n;
+	t_color c;
+	float	t;
+}	t_hit_result;
 
 typedef struct s_ambient
 {
@@ -53,6 +54,8 @@ typedef struct s_camera
 	t_vec3	pos;
 	t_vec3	fwd;
 	float	fov;
+	float	vw;
+	float	vh;
 }	t_camera;
 
 typedef struct s_light
@@ -123,9 +126,9 @@ typedef struct s_state
 	t_sphere_arr	spheres;
 	t_plane_arr		planes;
 	t_cylinder_arr	cylinders;
-    t_image    		img;
-    void    		*mlx;
-    void    		*win;
+	t_image    		img;
+	void    		*mlx;
+	void    		*win;
 	float			angle;
 }   t_state;
 
@@ -159,5 +162,16 @@ void	img_put_pixel(t_image *img, unsigned int x, unsigned int y,
 		t_color color);
 
 float	v3dot(t_vec3 a, t_vec3 b);
+t_vec3	v3cross(t_vec3 a, t_vec3 b);
+t_vec3	v3normalize(t_vec3 a);
+t_vec3	v3sub(t_vec3 a, t_vec3 b);
+t_vec3	v3add(t_vec3 a, t_vec3 b);
+t_vec3	v3mulf(t_vec3 a, float f);
+float	v3lenght(t_vec3 a);
+
+t_color	colormulf(t_color a, float f);
+t_color	coloradd(t_color a, t_color b);
+
+t_hit_result	intersect_scene(t_ray *ray, t_state *state);
 
 #endif 
