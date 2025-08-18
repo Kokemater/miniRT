@@ -1,11 +1,19 @@
-SRC = main.c
+SRC = main.c\
+	  parse_scene.c\
+	  parse_vec.c\
+	  parse_type.c\
+	  parse_arrays.c\
+	  arrays.c\
+	  error.c\
+	  image.c\
+	  v3.c
 
 OBJ = $(SRC:.c=.o)
 
-NAME = minirt
+NAME = miniRT
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address -g3 -std=gnu11
+CFLAGS = -std=gnu11 -Wall -Wextra -Werror -g3 # -fsanitize=address
 
 LIBFTDIR = libs/libft
 LIBFT = $(LIBFTDIR)/libft.a

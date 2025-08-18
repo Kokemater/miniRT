@@ -1,49 +1,151 @@
+#include "libs/libft/libft.h"
+#include "libs/minilibx-linux/mlx.h"
 #include "minirt.h"
 
-typedef struct s_state
+void	color_print(t_color c)
 {
-    void    *mlx;
-    void    *win;
-    int     counter;
-}   t_state;
+	printf("[c](%i, %i, %i)", c.r, c.g, c.b);
+}
 
-// El loop debe devolver int y recibir void* como parámetro
+void	v3_print(t_vec3 v)
+{
+	printf("[v](%.2f, %.2f, %.2f)", v.x, v.y, v.z);
+}
+
+void	state_print(t_state *s)
+{
+	unsigned int	i;
+
+	i = 0;
+	printf("[AMBIENT]\n");
+	printf("ratio: %f\n", s->ambient.ratio);
+	printf("color: ");
+	color_print(s->ambient.color);
+	printf("\n\n[CAMERA]\n");
+	printf("position: ");
+	v3_print(s->camera.pos);
+	printf("\norientation: ");
+	v3_print(s->camera.fwd);
+	printf("\nfov: %f", s->camera.fov);
+	printf("\n\n[LIGHT]\n");
+	printf("position: ");
+	v3_print(s->light.pos);
+	printf("\nbrightness: %f\n", s->light.brightness);
+	printf("color: ");
+	color_print(s->light.color);
+	printf("\n\n[SPHERES]\n");
+	while (i < s->spheres.count)
+	{
+		printf("%i:\n", i);
+		printf("position: ");
+		v3_print(s->spheres.arr[i].pos);
+		printf("\ndiameter: %f\n", s->spheres.arr[i].d);
+		printf("color: ");
+		color_print(s->spheres.arr[i].color);
+		printf("\n");
+		++i;
+	}
+	printf("\n[PLANES]\n");
+	i = 0;
+	while (i < s->planes.count)
+	{
+		printf("%i:\n", i);
+		printf("position: ");
+		v3_print(s->planes.arr[i].pos);
+		printf("\nnormal: ");
+		v3_print(s->planes.arr[i].normal);
+		printf("\ncolor: ");
+		color_print(s->planes.arr[i].color);
+		printf("\n");
+		++i;
+	}
+	printf("\n[CYLINDERS]\n");
+	i = 0;
+	while (i < s->cylinders.count)
+	{
+		printf("%i:\n", i);
+		printf("position: ");
+		v3_print(s->cylinders.arr[i].pos);
+		printf("\nforward: ");
+		v3_print(s->cylinders.arr[i].fwd);
+		printf("\ndiameter: %f", s->cylinders.arr[i].d);
+		printf("\nheight: %f", s->cylinders.arr[i].h);
+		printf("\ncolor: ");
+		color_print(s->cylinders.arr[i].color);
+		printf("\n");
+		++i;
+	}
+}
+
 int loop(void *param)
 {
-    t_state *state = (t_state *)param;
+    t_state *s = (t_state *)param;
 
-    printf("Frame %d\n", state->counter++);
-    // Aquí puedes dibujar en la ventana con mlx_pixel_put, imágenes, etc.
+	s->c.r++;
+	if (s->c.r % 2 == 0)
+		s->c.g++;
+	if (s->c.r % 3 == 0)
+		s->c.b++;
+	for (int x = 0; x < WIN_WIDTH; ++x)
+	{
+		for (int y = 0; y < WIN_HEIGHT; ++y)
+		{
+			img_put_pixel(&s->img, x, y, s->c);
+		}
+	}
+
+	mlx_put_image_to_window(s->mlx, s->win, s->img.handle, 0, 0); 
     return (0);
+}
+
+int	close_event(void *param)
+{
+	minirt_cleanup((t_state *)param);
+	exit(0);
+}
+
+int	key_event(int keycode, void *param)
+{
+	if (keycode == KEY_ESC)
+	{
+		minirt_cleanup((t_state *)param);
+		exit(0);
+	}
+	return (0);
 }
 
 int main(int argc, char *argv[])
 {
     t_state state;
+	int		file;
 
-    (void)argc;
-    (void)argv;
+	ft_bzero(&state, sizeof(t_state));
+	if (argc != 2)
+		minirt_error(&state, "Usage: ./miniRT <scene file>\n");
 
-    state.counter = 0;
+	file = open(argv[1], O_RDONLY);
+	if (file < 0)
+		minirt_error(&state, "Could not open scene file\n");
+	parse_file(&state, file);
+	state_print(&state);
+	close(file);
+
     state.mlx = mlx_init();
     if (!state.mlx)
-    {
-        fprintf(stderr, "Error: no se pudo inicializar MiniLibX\n");
-        return (1);
-    }
+		minirt_error(&state, "Could not initialize minilibx\n");
 
-    state.win = mlx_new_window(state.mlx, 800, 800, "MiniRT - MiniLibX");
+    state.win = mlx_new_window(state.mlx, WIN_WIDTH, WIN_HEIGHT, "miniRT");
     if (!state.win)
-    {
-        fprintf(stderr, "Error: no se pudo crear la ventana\n");
-        return (1);
-    }
+		minirt_error(&state, "Could not create window\n");
 
-    // Registramos el loop
+	minirt_create_img(&state);
+
+	mlx_hook(state.win, 17, 0, close_event, &state);
+	mlx_key_hook(state.win, key_event, &state);
+
     mlx_loop_hook(state.mlx, loop, &state);
-
-    // Inicia el bucle principal
     mlx_loop(state.mlx);
 
+	minirt_cleanup(&state);
     return (0);
 }
