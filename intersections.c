@@ -22,25 +22,68 @@ static t_hit_result ray_plane(t_plane *p, t_ray *r)
 
 static t_hit_result ray_cylinder(t_cylinder *c, t_ray *r)
 {
-	(void)c;
-	(void)r;
-	t_hit_result	ret;
-	t_vec3 na;
+    t_hit_result ret;
+    ret.t = -1.f;
 
-	na = v3cross(r->dir, c->fwd);
-	float d;
-	d = v3dot(na,na)*c->r*c->r - v3dot(c->fwd,c->fwd) * v3dot(c->pos, na) * v3dot(c->pos, na);
+    t_vec3 w = v3sub(r->or, c->pos);
+    t_vec3 u = c->fwd;
+    t_vec3 v = r->dir;
+
+    t_vec3 v_perp = v3sub(v, v3mulf(u, v3dot(v, u)));
+    t_vec3 w_perp = v3sub(w, v3mulf(u, v3dot(w, u)));
+
+    float A = v3dot(v_perp, v_perp);
+    float B = 2.f * v3dot(v_perp, w_perp);
+    float C = v3dot(w_perp, w_perp) - c->r * c->r;
+
+    float discr = B*B - 4.f*A*C;
+    if (discr < 0.f || A == 0.f)
+        return ret;
+
+    float sqrt_discr = sqrtf(discr);
 	
-	ret.t = -1.f;
-	return (ret);
-	if (d < 0)
-		return (ret);
-	ret.t = (v3dot(na, v3cross(c->pos, c->fwd)) + sqrtf(d) / v3dot(na, na));
-	if (ret.t < 0)
-		return (ret);
-		
-	return (ret);
-	
+    float t0 = (-B - sqrt_discr) / (2.f*A);
+    float t1 = (-B + sqrt_discr) / (2.f*A);
+
+    // choose nearest positive t
+    float t_hit = (t0 > 0.f) ? t0 : ((t1 > 0.f) ? t1 : -1.f);
+    if (t_hit < 0.f)
+        return ret; // both behind the ray
+
+    ret.t = t_hit;
+    ret.p = v3add(r->or, v3mulf(r->dir, t_hit));
+
+	t_vec3 p0 = v3add(r->or, v3mulf(r->dir, t0));
+	t_vec3 p1 = v3add(r->or, v3mulf(r->dir, t1));
+    t_vec3 hit0 = v3sub(p0, c->pos);
+    float h0 = v3dot(hit0, u);
+	t_vec3 hit1 = v3sub(p1, c->pos);
+    float h1 = v3dot(hit1, u);
+
+	if ((fabs(h0) > c->h/2.f && fabs(h1) > c->h/2.f) || (t0 < 0) || (t1 < 0))
+	{
+	}
+
+
+	if (fabs(h0) > c->h/2.f && fabs(h1) < c->h/2.f)
+	{
+		t_plane p;
+		p.color = c->color;
+		p.normal = c->fwd;
+		if (h0 > 0)
+			p.pos = v3add(c->pos, v3mulf(c->fwd, c->h /2.f));
+		else
+			p.pos = v3add(c->pos, v3mulf(c->fwd, -c->h /2.f));
+		return (ray_plane(&p, r));
+	}
+
+    t_vec3 hit_to_axis = v3sub(ret.p, c->pos);
+    float h = v3dot(hit_to_axis, u);
+    t_vec3 proj_on_axis = v3mulf(u, h);
+    ret.n = v3normalize(v3sub(hit_to_axis, proj_on_axis));
+	if (v3dot(ret.n, r->dir) > 0)
+		ret.n = v3mulf(ret.n, -1.f);
+    return ret;
 }
 
 static t_hit_result ray_sphere(t_sphere *s, t_ray *r)
@@ -56,10 +99,16 @@ static t_hit_result ray_sphere(t_sphere *s, t_ray *r)
 	if (discriminant < 0)
 		return (ret);
 	ret.t =  (-abc[1] - sqrtf(discriminant) ) / (2.0*abc[0]);
-	if ((ret.t < 0))
-		return (ret);
+	if (ret.t < 0)
+	{
+		ret.t = (-abc[1] + sqrtf(discriminant) ) / (2.0*abc[0]);
+		if (ret.t < 0)
+			return (ret);
+	}
 	ret.p = v3add(r->or ,v3mulf(r->dir, ret.t));
 	ret.n = v3normalize(v3sub(ret.p, s->pos));
+	if (v3dot(ret.n, r->dir) > 0)
+		ret.n = v3mulf(ret.n, -1.f);
 	return (ret);
 }
 
