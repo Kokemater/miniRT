@@ -71,7 +71,7 @@ void	state_print(t_state *s)
 		v3_print(s->cylinders.arr[i].pos);
 		printf("\nforward: ");
 		v3_print(s->cylinders.arr[i].fwd);
-		printf("\ndiameter: %f", s->cylinders.arr[i].d);
+		printf("\nradius: %f", s->cylinders.arr[i].r);
 		printf("\nheight: %f", s->cylinders.arr[i].h);
 		printf("\ncolor: ");
 		color_print(s->cylinders.arr[i].color);

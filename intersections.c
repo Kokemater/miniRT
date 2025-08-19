@@ -2,11 +2,21 @@
 
 static t_hit_result ray_plane(t_plane *p, t_ray *r)
 {
-	(void)p;
-	(void)r;
 	t_hit_result	ret;
+	float			ddotn;
 
+	ddotn = v3dot(r->dir, p->normal);
 	ret.t = -1.f;
+	if (fabs(ddotn) < FLT_EPSILON)
+		return (ret);
+	ret.t = (v3dot(p->pos, p->normal) - v3dot(r->or, p->normal)) / ddotn;
+	if (ret.t < 0)
+		return (ret);
+	ret.p = v3add(p->pos, v3mulf(r->dir, ret.t));
+	if (v3dot(r->dir, p->normal) < 0)
+		ret.n = p->normal;
+	else
+		ret.n = v3mulf(p->normal, -1.f);
 	return (ret);
 }
 
@@ -15,9 +25,22 @@ static t_hit_result ray_cylinder(t_cylinder *c, t_ray *r)
 	(void)c;
 	(void)r;
 	t_hit_result	ret;
+	t_vec3 na;
 
+	na = v3cross(r->dir, c->fwd);
+	float d;
+	d = v3dot(na,na)*c->r*c->r - v3dot(c->fwd,c->fwd) * v3dot(c->pos, na) * v3dot(c->pos, na);
+	
 	ret.t = -1.f;
 	return (ret);
+	if (d < 0)
+		return (ret);
+	ret.t = (v3dot(na, v3cross(c->pos, c->fwd)) + sqrtf(d) / v3dot(na, na));
+	if (ret.t < 0)
+		return (ret);
+		
+	return (ret);
+	
 }
 
 static t_hit_result ray_sphere(t_sphere *s, t_ray *r)
@@ -28,18 +51,15 @@ static t_hit_result ray_sphere(t_sphere *s, t_ray *r)
 	abc[0] = v3dot(r->dir, r->dir);
 	abc[1] = v3dot(v3mulf(r->dir, -2.0), c_q);
 	abc[2] = v3dot(c_q, c_q) - s->r *s->r;
+	ret.t = -1;
 	float discriminant = abc[1]*abc[1] - 4*abc[0]*abc[2];
 	if (discriminant < 0)
-	{
-		ret.t = -1;
-	} else
-	{
-		ret.t =  (-abc[1] - sqrtf(discriminant) ) / (2.0*abc[0]);
-		if ((ret.t < 0))
-			return (ret);
-		ret.p = v3add(r->or ,v3mulf(r->dir, ret.t));
-		ret.n = v3normalize(v3sub(ret.p, s->pos));
-	}
+		return (ret);
+	ret.t =  (-abc[1] - sqrtf(discriminant) ) / (2.0*abc[0]);
+	if ((ret.t < 0))
+		return (ret);
+	ret.p = v3add(r->or ,v3mulf(r->dir, ret.t));
+	ret.n = v3normalize(v3sub(ret.p, s->pos));
 	return (ret);
 }
 

@@ -85,7 +85,7 @@ typedef struct s_cylinder
 {
 	t_vec3	pos;
 	t_vec3	fwd;
-	float	d;
+	float	r;
 	float	h;
 	t_color	color;
 }	t_cylinder;

@@ -29,7 +29,7 @@ void	parse_cylinder(t_state *state, char *line)
 	line += 2;
 	cy.pos = parse_vec3(state, &line);
 	cy.fwd = parse_orientation(state, &line);
-	cy.d = parse_range_float(state, &line, 0.f, INFINITY);
+	cy.r = parse_range_float(state, &line, 0.f, INFINITY) / 2.f;
 	cy.h = parse_range_float(state, &line, 0.f, INFINITY);
 	cy.color = parse_color(state, &line);
 	cylinder_arr_add(state, cy);
