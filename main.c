@@ -96,7 +96,7 @@ t_color ray_color(t_ray *ray, t_state *state)
 		);
 		return color;
 	}
-	return ((t_color){0, 0, 0});
+	return ((t_color){255, 0, 255});
 }
 
 int loop(t_state *s)

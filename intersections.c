@@ -12,7 +12,7 @@ static t_hit_result ray_plane(t_plane *p, t_ray *r)
 	ret.t = (v3dot(p->pos, p->normal) - v3dot(r->or, p->normal)) / ddotn;
 	if (ret.t < 0)
 		return (ret);
-	ret.p = v3add(p->pos, v3mulf(r->dir, ret.t));
+	ret.p = v3add(r->or, v3mulf(r->dir, ret.t));
 	if (v3dot(r->dir, p->normal) < 0)
 		ret.n = p->normal;
 	else
@@ -42,49 +42,52 @@ static t_hit_result ray_cylinder(t_cylinder *c, t_ray *r)
 
     float sqrt_discr = sqrtf(discr);
 	
-    float t0 = (-B - sqrt_discr) / (2.f*A);
-    float t1 = (-B + sqrt_discr) / (2.f*A);
-
-    // choose nearest positive t
-    float t_hit = (t0 > 0.f) ? t0 : ((t1 > 0.f) ? t1 : -1.f);
-    if (t_hit < 0.f)
-        return ret; // both behind the ray
-
-    ret.t = t_hit;
-    ret.p = v3add(r->or, v3mulf(r->dir, t_hit));
-
-	t_vec3 p0 = v3add(r->or, v3mulf(r->dir, t0));
-	t_vec3 p1 = v3add(r->or, v3mulf(r->dir, t1));
-    t_vec3 hit0 = v3sub(p0, c->pos);
-    float h0 = v3dot(hit0, u);
-	t_vec3 hit1 = v3sub(p1, c->pos);
-    float h1 = v3dot(hit1, u);
-
-	if ((fabs(h0) > c->h/2.f && fabs(h1) > c->h/2.f) || (t0 < 0) || (t1 < 0))
+    ret.t = (-B - sqrt_discr) / (2.f*A);
+	ret.p = v3add(r->or, v3mulf(r->dir, ret.t));
+	float h = v3dot(v3sub(ret.p, c->pos), c->fwd);
+	if (ret.t < 0.f || fabs(h) > c->h / 2.f)
 	{
+		ret.t = (-B + sqrt_discr) / (2.f*A);
+		ret.p = v3add(r->or, v3mulf(r->dir, ret.t));
+		h = v3dot(v3sub(ret.p, c->pos), c->fwd);
+		if (ret.t < 0.f || fabs(h) > c->h / 2.f)
+			return ((t_hit_result){.t = -1.f});
 	}
 
-
-	if (fabs(h0) > c->h/2.f && fabs(h1) < c->h/2.f)
-	{
-		t_plane p;
-		p.color = c->color;
-		p.normal = c->fwd;
-		if (h0 > 0)
-			p.pos = v3add(c->pos, v3mulf(c->fwd, c->h /2.f));
-		else
-			p.pos = v3add(c->pos, v3mulf(c->fwd, -c->h /2.f));
-		return (ray_plane(&p, r));
-	}
-
-    t_vec3 hit_to_axis = v3sub(ret.p, c->pos);
-    float h = v3dot(hit_to_axis, u);
-    t_vec3 proj_on_axis = v3mulf(u, h);
-    ret.n = v3normalize(v3sub(hit_to_axis, proj_on_axis));
+    ret.n = v3normalize(v3sub(v3sub(ret.p, c->pos), v3mulf(c->fwd, h)));
 	if (v3dot(ret.n, r->dir) > 0)
 		ret.n = v3mulf(ret.n, -1.f);
     return ret;
 }
+
+
+t_hit_result ray_tapered_cyl(t_cylinder *c, t_ray *r)
+{
+	float	d2;
+	t_hit_result res = ray_cylinder(c, r);
+	t_vec3 ppos = v3add(c->pos, v3mulf(c->fwd, c->h / 2.f));
+	t_hit_result p1 = ray_plane(&(t_plane){
+		.color = c->color,
+		.normal = c->fwd,
+		.pos = ppos,
+	}, r);
+	d2 = v3length2(v3cross(c->fwd, v3sub(p1.p, c->pos)));
+	
+	
+	if (p1.t > 0 && d2 < c->r * c->r && (p1.t < res.t || res.t < 0))
+		res = p1;
+
+	p1 = ray_plane(&(t_plane){
+		.color = c->color,
+		.normal = c->fwd,
+		.pos = v3add(c->pos, v3mulf(c->fwd, -c->h / 2.f))
+	}, r);
+	d2 = v3length2(v3cross(c->fwd, v3sub(p1.p, c->pos)));
+	if (p1.t > 0 && d2 < c->r * c->r && (p1.t < res.t || res.t < 0))
+		res = p1;
+	return (res);
+}
+
 
 static t_hit_result ray_sphere(t_sphere *s, t_ray *r)
 {
@@ -140,7 +143,7 @@ t_hit_result	intersect_scene(t_ray *ray, t_state *state)
 	i = 0;
 	while (i < state->cylinders.count)
 	{
-		r = ray_cylinder(&state->cylinders.arr[i], ray);
+		r = ray_tapered_cyl(&state->cylinders.arr[i], ray);
 		r.c = state->cylinders.arr[i].color;
 		if ((r.t > 0 && r.t < c.t) || c.t < 0)
 			c = r;

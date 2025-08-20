@@ -171,7 +171,7 @@ t_vec3	v3normalize(t_vec3 a);
 t_vec3	v3sub(t_vec3 a, t_vec3 b);
 t_vec3	v3add(t_vec3 a, t_vec3 b);
 t_vec3	v3mulf(t_vec3 a, float f);
-float	v3lenght(t_vec3 a);
+float	v3length2(t_vec3 a);
 
 t_color	colormulf(t_color a, float f);
 t_color	coloradd(t_color a, t_color b);
