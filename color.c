@@ -20,7 +20,7 @@ t_color coloradd(t_color a, t_color b)
     r = a.r + b.r;
     if (r > 255)
         r = 255;
-    g = a.r + b.r;
+    g = a.g + b.g;
     if (g > 255)
         g = 255;
     bl = a.b + b.b;

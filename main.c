@@ -80,14 +80,14 @@ void	state_print(t_state *s)
 	}
 }
 
-static float shadow(t_state *state, t_vec3 p)
+static int shadow(t_state *state, t_vec3 p)
 {
 	t_ray			sr;
 	float			lightt;
 	t_hit_result	shadow;
 
 	sr = (t_ray){.or = p, .dir = v3normalize(v3sub(state->light.pos, p))};
-	sr.or = v3add(sr.or, v3mulf(sr.dir, 0.1f));
+	sr.or = v3add(sr.or, v3mulf(sr.dir, 0.001f));
 	lightt = (state->light.pos.x - sr.or.x) / sr.dir.x;
 	shadow = intersect_scene(&sr, state);
 	return (shadow.t < lightt && shadow.t > 0);
