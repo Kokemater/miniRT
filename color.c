@@ -13,9 +13,21 @@ t_color colormulf(t_color a, float f)
 t_color coloradd(t_color a, t_color b)
 {
     t_color ret;
+    int     r;
+    int     g;
+    int     bl;
 
-    ret.r = a.r + b.r;
-    ret.g = a.g + b.g;
-    ret.b = a.b + b.b;
+    r = a.r + b.r;
+    if (r > 255)
+        r = 255;
+    g = a.r + b.r;
+    if (g > 255)
+        g = 255;
+    bl = a.b + b.b;
+    if (bl > 255)
+        bl = 255;
+    ret.r = r;
+    ret.g = g;
+    ret.b = bl;
     return (ret);
 }

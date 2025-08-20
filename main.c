@@ -80,16 +80,36 @@ void	state_print(t_state *s)
 	}
 }
 
+static float shadow(t_state *state, t_vec3 p)
+{
+	t_ray			sr;
+	float			lightt;
+	t_hit_result	shadow;
+
+	sr = (t_ray){.or = p, .dir = v3normalize(v3sub(state->light.pos, p))};
+	sr.or = v3add(sr.or, v3mulf(sr.dir, 0.1f));
+	lightt = (state->light.pos.x - sr.or.x) / sr.dir.x;
+	shadow = intersect_scene(&sr, state);
+	return (shadow.t < lightt && shadow.t > 0);
+}
+
 t_color ray_color(t_ray *ray, t_state *state)
 {
-	float		ndotl; t_hit_result	c;
+	float		ndotl;
+	t_hit_result	c;
 
 	c = intersect_scene(ray, state);
 	if (c.t > 0)
 	{
-		ndotl = v3dot(v3normalize(v3sub(state->light.pos, c.p)), c.n);
-		if (ndotl < 0)
+		if (shadow(state, c.p))
 			ndotl = 0;
+		else
+		{
+			ndotl = v3dot(v3normalize(v3sub(state->light.pos, c.p)), c.n);
+			if (ndotl < 0)
+				ndotl = 0;
+		}
+
 		t_color color = coloradd(
 			colormulf(c.c, ndotl * state->light.brightness),
 			colormulf(state->ambient.color, state->ambient.ratio)
