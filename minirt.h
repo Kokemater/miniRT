@@ -177,5 +177,8 @@ t_color	colormulf(t_color a, float f);
 t_color	coloradd(t_color a, t_color b);
 
 t_hit_result	intersect_scene(t_ray *ray, t_state *state);
+t_hit_result	ray_cap_cylinder(t_cylinder *c, t_ray *r);
+t_hit_result	ray_plane(t_plane *p, t_ray *r);
+t_hit_result	ray_sphere(t_sphere *s, t_ray *r);
 
 #endif 
