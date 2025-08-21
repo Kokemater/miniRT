@@ -6,7 +6,7 @@
 /*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:42:39 by jbutragu          #+#    #+#             */
-/*   Updated: 2025/08/21 12:42:47 by jbutragu         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:06:29 by jbutragu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static int	shadow(t_state *state, t_vec3 p, t_light *l)
 	t_hit_result	shadow;
 
 	sr = (t_ray){.or = p, .dir = v3norm(v3sub(l->pos, p))};
-	sr.or = v3add(sr.or, v3mulf(sr.dir, 0.001f));
+	sr.or = v3add(sr.or, v3mulf(sr.dir, 0.025f));
 	if (fabsf(sr.dir.x) >= fabsf(sr.dir.y)
 		&& fabsf(sr.dir.x) >= fabsf(sr.dir.z))
 		lightt = (l->pos.x - sr.or.x) / sr.dir.x;
@@ -64,5 +64,5 @@ t_color	ray_color(t_ray *ray, t_state *state)
 	c = intersect_scene(ray, state);
 	if (c.t > 0)
 		return (lighting(state, c));
-	return ((t_color){255, 0, 255});
+	return ((t_color){0, 0, 0});
 }

@@ -6,7 +6,7 @@
 /*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:39:52 by jbutragu          #+#    #+#             */
-/*   Updated: 2025/08/21 12:39:53 by jbutragu         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:24:50 by jbutragu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,15 +32,15 @@ t_vec3	parse_vec3(t_state *state, char **line)
 {
 	t_vec3	ret;
 
-	ret.x = ft_atof(line);
+	ret.x = parse_range_float(state, line, -INFINITY, INFINITY);
 	if (**line != ',')
 		minirt_error(state, "Invalid vec3 format\n");
 	++(*line);
-	ret.y = ft_atof(line);
+	ret.y = parse_range_float(state, line, -INFINITY, INFINITY);
 	if (**line != ',')
 		minirt_error(state, "Invalid vec3 format\n");
 	++(*line);
-	ret.z = ft_atof(line);
+	ret.z = parse_range_float(state, line, -INFINITY, INFINITY);
 	return (ret);
 }
 

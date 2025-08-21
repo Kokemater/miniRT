@@ -6,7 +6,7 @@
 /*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:33:52 by jbutragu          #+#    #+#             */
-/*   Updated: 2025/08/21 12:39:13 by jbutragu         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:23:47 by jbutragu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ static float	ft_atof_mantissa(char **s)
 
 	r = 0;
 	p = 1;
+	if (!ft_isdigit(**s))
+		return (NAN);
 	while (ft_isdigit(**s))
 	{
 		p *= 10;
@@ -57,6 +59,8 @@ float	ft_atof(char **s)
 		sign = -1;
 	}
 	r = 0;
+	if (!ft_isdigit(**s) && **s != '.')
+		return (NAN);
 	while (ft_isdigit(**s))
 	{
 		r = (r * 10.0) + (**s - '0');
@@ -75,6 +79,8 @@ float	parse_range_float(t_state *state, char **line, float min, float max)
 	float	f;
 
 	f = ft_atof(line);
+	if (isnan(f))
+		minirt_error(state, "Invalid float format\n");
 	if (f < min - FLT_EPSILON)
 		minirt_error(state, "Float out of range\n");
 	if (f > max + FLT_EPSILON)
