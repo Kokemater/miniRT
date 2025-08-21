@@ -6,7 +6,7 @@
 /*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:42:24 by jbutragu          #+#    #+#             */
-/*   Updated: 2025/08/21 12:42:29 by jbutragu         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:57:32 by jbutragu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,4 @@ void	parse_cylinder(t_state *state, char *line)
 	cy.h = parse_range_float(state, &line, 0.f, INFINITY);
 	cy.color = parse_color(state, &line);
 	cylinder_arr_add(state, cy);
-}
-
-void	parse_light(t_state *state, char *line)
-{
-	t_light	l;
-
-	++line;
-	l.pos = parse_vec3(state, &line);
-	l.brightness = parse_range_float(state, &line, 0.0, 1.0);
-	l.color = parse_color(state, &line);
-	light_arr_add(state, l);
 }

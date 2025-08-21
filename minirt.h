@@ -19,6 +19,7 @@
 
 # define FLAG_CAMERA_FOUND (1 << 0)
 # define FLAG_AMBIENT_FOUND (1 << 1)
+# define FLAG_LIGHT_FOUND (1 << 2)
 
 typedef struct s_vec3
 {

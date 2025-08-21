@@ -1,5 +1,4 @@
-SRC = main.c\
-	  parse_scene.c\
+SRCC = main.c\
 	  parse_vec.c\
 	  parse_type.c\
 	  parse_arrays.c\
@@ -13,7 +12,14 @@ SRC = main.c\
 	  color.c\
 	  v3.c
 
+SRC = $(SRCC)\
+	  parse_scene.c
+
+SRCB = $(SRCC)\
+	  parse_scene_bonus.c
+
 OBJ = $(SRC:.c=.o)
+OBJB = $(SRCB:.c=.o)
 
 NAME = miniRT
 
@@ -35,6 +41,9 @@ all: $(NAME)
 $(NAME): $(OBJ) $(MINILIBX) $(LIBFT)
 	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
+bonus: $(OBJB) $(MINILIBX) $(LIBFT)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+
 $(MINILIBX):
 	make -C $(MLXDIR)
 
@@ -42,12 +51,12 @@ $(LIBFT):
 	make -C $(LIBFTDIR)
 
 clean:
-	@rm -f $(OBJ)
+	@rm -f $(OBJ) $(OBJB)
 	make -C $(MLXDIR) clean
 	make -C $(LIBFTDIR) clean
 
 fclean: clean
-	@rm -f $(NAME)
+	@rm -f $(NAME) $(NAME)_bonus
 
 re: fclean $(NAME)
 
