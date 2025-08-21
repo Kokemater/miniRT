@@ -88,9 +88,16 @@ static int shadow(t_state *state, t_vec3 p)
 
 	sr = (t_ray){.or = p, .dir = v3normalize(v3sub(state->light.pos, p))};
 	sr.or = v3add(sr.or, v3mulf(sr.dir, 0.001f));
-	lightt = (state->light.pos.x - sr.or.x) / sr.dir.x;
+
+if (fabsf(sr.dir.x) >= fabsf(sr.dir.y) && fabsf(sr.dir.x) >= fabsf(sr.dir.z))
+    lightt = (state->light.pos.x - sr.or.x) / sr.dir.x;
+else if (fabsf(sr.dir.y) >= fabsf(sr.dir.z))
+    lightt = (state->light.pos.y - sr.or.y) / sr.dir.y;
+else
+    lightt = (state->light.pos.z - sr.or.z) / sr.dir.z;
+
 	shadow = intersect_scene(&sr, state);
-	return (shadow.t < lightt && shadow.t > 0);
+	return (shadow.t < lightt + 0.001f && shadow.t > 0);
 }
 
 t_color ray_color(t_ray *ray, t_state *state)
