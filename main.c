@@ -6,13 +6,14 @@
 /*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:06:04 by jbutragu          #+#    #+#             */
-/*   Updated: 2025/08/21 12:36:44 by jbutragu         ###   ########.fr       */
+/*   Updated: 2025/08/21 19:40:10 by dmoraled         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libs/libft/libft.h"
 #include "libs/minilibx-linux/mlx.h"
 #include "minirt.h"
+#include <GLFW/glfw3.h>
 
 int	loop(t_state *s)
 {
@@ -39,42 +40,111 @@ int	loop(t_state *s)
 		}
 		++y;
 	}
-	mlx_put_image_to_window(s->mlx, s->win, s->img.handle, 0, 0);
+	// mlx_put_image_to_window(s->mlx, s->win, s->img.handle, 0, 0);
 	return (0);
 }
 
-int	close_event(void *param)
+void	close_event(GLFWwindow *w)
 {
-	minirt_cleanup((t_state *)param);
+	t_state	*s = glfwGetWindowUserPointer(w);
+	minirt_cleanup(s);
 	exit(0);
 }
 
-int	key_event(int keycode, void *param)
+void	key_event(GLFWwindow *w, int key, int scancode, int action, int mods)
 {
-	if (keycode == KEY_ESC)
+	t_state	*s = glfwGetWindowUserPointer(w);
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
-		minirt_cleanup((t_state *)param);
+		minirt_cleanup(s);
 		exit(0);
 	}
-	return (0);
 }
 
 void	minirt_init(t_state *state)
 {
-	state->mlx = mlx_init();
-	if (!state->mlx)
-		minirt_error(state, "Could not initialize minilibx\n");
-	state->win = mlx_new_window(state->mlx, WIN_WIDTH, WIN_HEIGHT, "miniRT");
+	if (!glfwInit())
+		minirt_error(state, "Could not initialize glfw\n");
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	state->win = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "miniRT", 0, 0);
 	if (!state->win)
 		minirt_error(state, "Could not create window\n");
+	glfwSetWindowUserPointer(state->win, state);
+	glfwSetWindowCloseCallback(state->win, close_event);
+	glfwSetKeyCallback(state->win, key_event);
+	glfwMakeContextCurrent(state->win);
+	if (!gladLoadGL((GLADloadfunc)glfwGetProcAddress))
+		minirt_error(state, "Could not load gl\n");
 	minirt_create_img(state);
-	mlx_hook(state->win, 17, 0, close_event, state);
-	mlx_key_hook(state->win, key_event, state);
-	mlx_loop_hook(state->mlx, loop, state);
+
+    const char* vertexShaderSource = R"(
+        #version 460 core
+        out vec2 TexCoord;
+        void main() {
+            vec2 vertices[3] = vec2[3](
+                vec2(-1.0, -1.0),
+                vec2(3.0, -1.0),
+                vec2(-1.0, 3.0)
+            );
+            vec2 texCoords[3] = vec2[3](
+                vec2(0.0, 0.0),
+                vec2(2.0, 0.0),
+                vec2(0.0, 2.0)
+            );
+            gl_Position = vec4(vertices[gl_VertexID], 0.0, 1.0);
+            TexCoord = texCoords[gl_VertexID];
+        }
+    )";
+
+    const char* fragmentShaderSource = R"(
+        #version 460 core
+        out vec4 FragColor;
+        in vec2 TexCoord;
+        uniform sampler2D rayTraceTexture;
+        void main() {
+            vec2 uv = clamp(TexCoord, 0.0, 1.0);
+            FragColor = texture(rayTraceTexture, uv);
+        }
+    )";
+    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+
+    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+
+    state->shader = glCreateProgram();
+    glAttachShader(state->shader, vertexShader);
+    glAttachShader(state->shader, fragmentShader);
+    glLinkProgram(state->shader);
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+	glCreateVertexArrays(1, &state->vao);
 	state->cam.vw = 2 * tanf(state->cam.fov / 2.f);
 	state->cam.vh = state->cam.vw / ((float) WIN_WIDTH / (float) WIN_HEIGHT);
 	state->cam.right = v3cross((t_vec3){0, 1, 0}, state->cam.fwd);
 	state->cam.up = v3cross(state->cam.right, state->cam.fwd);
+}
+
+void	minirt_loop(t_state *state)
+{
+	while (!glfwWindowShouldClose(state->win))
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+		loop(state);
+		glTextureSubImage2D(state->img.handle, 0, 0, 0, WIN_WIDTH, WIN_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, state->img.data);
+		glUseProgram(state->shader);
+		glBindTextureUnit(0, state->img.handle);
+		glBindVertexArray(state->vao);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glfwSwapBuffers(state->win);
+		glfwPollEvents();
+	}
 }
 
 int	main(int argc, char *argv[])
@@ -92,7 +162,7 @@ int	main(int argc, char *argv[])
 	check_state(&state);
 	close(file);
 	minirt_init(&state);
-	mlx_loop(state.mlx);
+	minirt_loop(&state);
 	minirt_cleanup(&state);
 	return (0);
 }

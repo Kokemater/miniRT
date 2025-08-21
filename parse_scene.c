@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse_scene.c                                      :+:      :+:    :+:   */
+/*   parse_scene_bonus.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:40:05 by jbutragu          #+#    #+#             */
-/*   Updated: 2025/08/21 13:57:21 by jbutragu         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:53:28 by jbutragu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,6 @@ void	parse_light(t_state *state, char *line)
 {
 	t_light	l;
 
-	if (state->flags & FLAG_LIGHT_FOUND)
-		minirt_error(state, "Light defined more than once\n");
-	state->flags |= FLAG_LIGHT_FOUND;
 	++line;
 	l.pos = parse_vec3(state, &line);
 	l.brightness = parse_range_float(state, &line, 0.0, 1.0);
@@ -65,8 +62,7 @@ int	parse_file(t_state *state, int fd)
 			parse_ambient(state, line);
 		else if (ft_strncmp("C ", line, 2) == 0)
 			parse_camera(state, line);
-		else if (ft_strncmp("L ", line, 2) == 0
-			|| ft_strncmp("l ", line, 2) == 0)
+		else if (ft_strncmp("l ", line, 2) == 0)
 			parse_light(state, line);
 		else if (ft_strncmp("sp ", line, 3) == 0)
 			parse_sphere(state, line);

@@ -1,6 +1,8 @@
 *.o
+build/
 *.a
 miniRT
-.vscode/*
+.vscode/
+.cache/
 *.swp
 bonus

@@ -5,6 +5,8 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <float.h>
+# include <glad/gl.h>
+# include <GLFW/glfw3.h>
 # include <math.h>
 
 # include "libs/minilibx-linux/mlx.h"
@@ -125,11 +127,19 @@ typedef struct s_cylinder_arr
 }	t_cylinder_arr;
 
 typedef struct s_image
-{ void	*handle; char	*addr;
-	int		bpp;
-	int		line_length;
-	int		endian;
+{
+	unsigned int	handle;
+	t_color			*data;
 }	t_image;
+
+// typedef struct s_image
+// {
+// 	void	*handle;
+// 	char	*addr;
+// 	int		bpp;
+// 	int		line_length;
+// 	int		endian;
+// }	t_image;
 
 typedef struct s_state
 {
@@ -140,9 +150,10 @@ typedef struct s_state
 	t_plane_arr		planes;
 	t_cylinder_arr		cylinders;
 	t_image    		img;
-	void    		*mlx;
-	void    		*win;
+	GLFWwindow    		*win;
 	unsigned int		flags;
+	unsigned int		shader;
+	unsigned int		vao;
 }   t_state;
 
 
