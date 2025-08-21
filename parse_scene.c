@@ -2,6 +2,9 @@
 
 void	parse_ambient(t_state *state, char *line)
 {
+	if (state->flags & FLAG_AMBIENT_FOUND)
+		minirt_error(state, "Ambient defined more than once\n");
+	state->flags |= FLAG_AMBIENT_FOUND;
 	++line;
 	state->ambient.ratio = parse_range_float(state, &line, 0.0, 1.0);
 	state->ambient.color = parse_color(state, &line);
@@ -9,6 +12,9 @@ void	parse_ambient(t_state *state, char *line)
 
 void	parse_camera(t_state *state, char *line)
 {
+	if (state->flags & FLAG_CAMERA_FOUND)
+		minirt_error(state, "Camera defined more than once\n");
+	state->flags |= FLAG_CAMERA_FOUND;
 	++line;
 	state->camera.pos = parse_vec3(state, &line);
 	state->camera.fwd = parse_orientation(state, &line);
@@ -16,12 +22,10 @@ void	parse_camera(t_state *state, char *line)
 			* PI / 180.f;
 }
 
-void	parse_light(t_state *state, char *line)
+void	check_state(t_state *state)
 {
-	++line;
-	state->light.pos = parse_vec3(state, &line);
-	state->light.brightness = parse_range_float(state, &line, 0.0, 1.0);
-	state->light.color = parse_color(state, &line);
+	if (!(state->flags & FLAG_CAMERA_FOUND))
+		minirt_error(state, "Camera not defined\n");
 }
 
 int	parse_file(t_state *state, int fd)
@@ -35,7 +39,7 @@ int	parse_file(t_state *state, int fd)
 			parse_ambient(state, line);
 		else if (ft_strncmp("C ", line, 2) == 0)
 			parse_camera(state, line);
-		else if (ft_strncmp("L ", line, 2) == 0)
+		else if (ft_strncmp("l ", line, 2) == 0)
 			parse_light(state, line);
 		else if (ft_strncmp("sp ", line, 3) == 0)
 			parse_sphere(state, line);

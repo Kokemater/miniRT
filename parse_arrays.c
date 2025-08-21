@@ -34,3 +34,15 @@ void	parse_cylinder(t_state *state, char *line)
 	cy.color = parse_color(state, &line);
 	cylinder_arr_add(state, cy);
 }
+
+void	parse_light(t_state *state, char *line)
+{
+	t_light	l;
+
+	++line;
+	l.pos = parse_vec3(state, &line);
+	l.brightness = parse_range_float(state, &line, 0.0, 1.0);
+	l.color = parse_color(state, &line);
+	light_arr_add(state, l);
+}
+

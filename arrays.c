@@ -56,3 +56,23 @@ void	cylinder_arr_add(t_state *s, t_cylinder n)
 	s->cylinders.arr[s->cylinders.count] = n;
 	++s->cylinders.count;
 }
+
+void	light_arr_add(t_state *s, t_light n)
+
+{
+	t_light	*tmp;
+
+	if (s->lights.count == s->lights.cap)
+	{
+		s->lights.cap = s->lights.cap * 2 + 1;
+		tmp = malloc(sizeof(t_light) * s->lights.cap);
+		if (!tmp)
+			minirt_error(s, "Out of memory\n");
+		ft_memcpy(tmp, s->lights.arr, sizeof(t_light) * s->lights.count);
+		if (s->lights.arr)
+			free(s->lights.arr);
+		s->lights.arr = tmp;
+	}
+	s->lights.arr[s->lights.count] = n;
+	++s->lights.count;
+}

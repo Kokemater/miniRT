@@ -29,12 +29,19 @@ void	state_print(t_state *s)
 	printf("\norientation: ");
 	v3_print(s->camera.fwd);
 	printf("\nfov: %f", s->camera.fov);
-	printf("\n\n[LIGHT]\n");
-	printf("position: ");
-	v3_print(s->light.pos);
-	printf("\nbrightness: %f\n", s->light.brightness);
-	printf("color: ");
-	color_print(s->light.color);
+	printf("\n\n[LIGHTS]\n");
+	i = 0;
+	while (i < s->lights.count)
+	{
+		printf("%i:\n", i);
+		printf("position: ");
+		v3_print(s->lights.arr[i].pos);
+		printf("\nbrightness: %f\n", s->lights.arr[i].brightness);
+		printf("color: ");
+		color_print(s->lights.arr[i].color);
+		printf("\n");
+		++i;
+	}
 	printf("\n\n[SPHERES]\n");
 	i = 0;
 	while (i < s->spheres.count)
@@ -80,49 +87,56 @@ void	state_print(t_state *s)
 	}
 }
 
-static int shadow(t_state *state, t_vec3 p)
+static int shadow(t_state *state, t_vec3 p, t_light *l)
 {
 	t_ray			sr;
 	float			lightt;
 	t_hit_result	shadow;
 
-	sr = (t_ray){.or = p, .dir = v3normalize(v3sub(state->light.pos, p))};
+	sr = (t_ray){.or = p, .dir = v3normalize(v3sub(l->pos, p))};
 	sr.or = v3add(sr.or, v3mulf(sr.dir, 0.001f));
-
-if (fabsf(sr.dir.x) >= fabsf(sr.dir.y) && fabsf(sr.dir.x) >= fabsf(sr.dir.z))
-    lightt = (state->light.pos.x - sr.or.x) / sr.dir.x;
-else if (fabsf(sr.dir.y) >= fabsf(sr.dir.z))
-    lightt = (state->light.pos.y - sr.or.y) / sr.dir.y;
-else
-    lightt = (state->light.pos.z - sr.or.z) / sr.dir.z;
-
+	if (fabsf(sr.dir.x) >= fabsf(sr.dir.y) && fabsf(sr.dir.x) >= fabsf(sr.dir.z))
+		lightt = (l->pos.x - sr.or.x) / sr.dir.x;
+	else if (fabsf(sr.dir.y) >= fabsf(sr.dir.z))
+		lightt = (l->pos.y - sr.or.y) / sr.dir.y;
+	else
+		lightt = (l->pos.z - sr.or.z) / sr.dir.z;
 	shadow = intersect_scene(&sr, state);
 	return (shadow.t < lightt + 0.001f && shadow.t > 0);
 }
 
-t_color ray_color(t_ray *ray, t_state *state)
+t_color	lighting(t_state *state, t_hit_result hit)
 {
+	t_color		color;
 	float		ndotl;
-	t_hit_result	c;
+	unsigned int	i;
 
-	c = intersect_scene(ray, state);
-	if (c.t > 0)
+	i = 0;
+	color = colormulf(state->ambient.color, state->ambient.ratio);
+	while (i < state->lights.count)
 	{
-		if (shadow(state, c.p))
+		if (shadow(state, hit.p, &state->lights.arr[i]))
 			ndotl = 0;
 		else
 		{
-			ndotl = v3dot(v3normalize(v3sub(state->light.pos, c.p)), c.n);
+			ndotl = v3dot(v3normalize(v3sub(state->lights.arr[i].pos, hit.p)), hit.n);
 			if (ndotl < 0)
 				ndotl = 0;
 		}
-
-		t_color color = coloradd(
-			colormulf(c.c, ndotl * state->light.brightness),
-			colormulf(state->ambient.color, state->ambient.ratio)
-		);
-		return color;
+		color = coloradd(color, colormulf(hit.c, ndotl * state->lights.arr[i].brightness));
+		++i;
 	}
+	return color;
+}
+
+t_color ray_color(t_ray *ray, t_state *state)
+{
+	t_hit_result	c;
+
+	c = intersect_scene(ray, state);
+
+	if (c.t > 0)
+		return (lighting(state, c));
 	return ((t_color){255, 0, 255});
 }
 
@@ -183,6 +197,7 @@ int main(int argc, char *argv[])
 	if (file < 0)
 		minirt_error(&state, "Could not open scene file\n");
 	parse_file(&state, file);
+	check_state(&state);
 	state_print(&state);
 	close(file);
 

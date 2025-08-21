@@ -17,6 +17,9 @@
 
 # define KEY_ESC 65307
 
+# define FLAG_CAMERA_FOUND (1 << 0)
+# define FLAG_AMBIENT_FOUND (1 << 1)
+
 typedef struct s_vec3
 {
 	float	x;
@@ -92,6 +95,13 @@ typedef struct s_cylinder
 	t_color	color;
 }	t_cylinder;
 
+typedef struct s_light_arr
+{
+	t_light		*arr;
+	unsigned int	count;
+	unsigned int	cap;
+}	t_light_arr;
+
 typedef struct s_sphere_arr
 {
 	t_sphere		*arr;
@@ -114,9 +124,7 @@ typedef struct s_cylinder_arr
 }	t_cylinder_arr;
 
 typedef struct s_image
-{
-	void	*handle;
-	char	*addr;
+{ void	*handle; char	*addr;
 	int		bpp;
 	int		line_length;
 	int		endian;
@@ -126,14 +134,14 @@ typedef struct s_state
 {
 	t_ambient		ambient;
 	t_camera		camera;
-	t_light			light;
-	t_sphere_arr	spheres;
+	t_light_arr		lights;
+	t_sphere_arr		spheres;
 	t_plane_arr		planes;
-	t_cylinder_arr	cylinders;
+	t_cylinder_arr		cylinders;
 	t_image    		img;
 	void    		*mlx;
 	void    		*win;
-	float			angle;
+	unsigned int		flags;
 }   t_state;
 
 
@@ -152,6 +160,7 @@ int		parse_file(t_state *state, int fd);
 void	parse_ambient(t_state *state, char *line);
 void	parse_camera(t_state *state, char *line);
 void	parse_light(t_state *state, char *line);
+void	check_state(t_state *state);
 
 void	parse_sphere(t_state *state, char *line);
 void	parse_plane(t_state *state, char *line);
@@ -160,6 +169,7 @@ void	parse_cylinder(t_state *state, char *line);
 void	sphere_arr_add(t_state *s, t_sphere n);
 void	plane_arr_add(t_state *s, t_plane n);
 void	cylinder_arr_add(t_state *s, t_cylinder n);
+void	light_arr_add(t_state *s, t_light n);
 
 void	minirt_create_img(t_state *state);
 void	img_put_pixel(t_image *img, unsigned int x, unsigned int y,
