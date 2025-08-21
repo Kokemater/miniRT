@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   intersections_scene.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/21 12:42:55 by jbutragu          #+#    #+#             */
+/*   Updated: 2025/08/21 12:43:54 by jbutragu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 static void	intersect_spheres(t_ray *ray, t_state *state, t_hit_result *closest)
@@ -32,7 +44,8 @@ static void	intersect_planes(t_ray *ray, t_state *state, t_hit_result *closest)
 	}
 }
 
-static void	intersect_cylinders(t_ray *ray, t_state *state, t_hit_result *closest)
+static void	intersect_cylinders(t_ray *ray, t_state *state,
+		t_hit_result *closest)
 {
 	unsigned int	i;
 	t_hit_result	r;
@@ -52,7 +65,7 @@ t_hit_result	intersect_scene(t_ray *ray, t_state *state)
 {
 	t_hit_result	c;
 
-	c.t = -1;
+	c = (t_hit_result){.t = -1, .n = {0, 0, 0}, .p = {0, 0, 0}, .c = {0, 0, 0}};
 	intersect_spheres(ray, state, &c);
 	intersect_planes(ray, state, &c);
 	intersect_cylinders(ray, state, &c);

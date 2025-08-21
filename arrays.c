@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   arrays.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/21 12:54:50 by jbutragu          #+#    #+#             */
+/*   Updated: 2025/08/21 12:55:11 by jbutragu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	sphere_arr_add(t_state *s, t_sphere n)
@@ -48,7 +60,8 @@ void	cylinder_arr_add(t_state *s, t_cylinder n)
 		tmp = malloc(sizeof(t_cylinder) * s->cylinders.cap);
 		if (!tmp)
 			minirt_error(s, "Out of memory\n");
-		ft_memcpy(tmp, s->cylinders.arr, sizeof(t_cylinder) * s->cylinders.count);
+		ft_memcpy(tmp, s->cylinders.arr,
+			sizeof(t_cylinder) * s->cylinders.count);
 		if (s->cylinders.arr)
 			free(s->cylinders.arr);
 		s->cylinders.arr = tmp;

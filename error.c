@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   error.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/21 12:54:07 by jbutragu          #+#    #+#             */
+/*   Updated: 2025/08/21 12:54:16 by jbutragu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	minirt_cleanup(t_state *state)
@@ -9,6 +21,8 @@ void	minirt_cleanup(t_state *state)
 		free(state->planes.arr);
 	if (state->cylinders.arr)
 		free(state->cylinders.arr);
+	if (state->lights.arr)
+		free(state->lights.arr);
 	if (!state->mlx)
 		return ;
 	if (state->img.handle)
@@ -26,4 +40,3 @@ void	minirt_error(t_state *state, char *message)
 	minirt_cleanup(state);
 	exit(1);
 }
-

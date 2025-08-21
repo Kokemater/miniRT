@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_scene.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/21 12:40:05 by jbutragu          #+#    #+#             */
+/*   Updated: 2025/08/21 12:42:14 by jbutragu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	parse_ambient(t_state *state, char *line)
@@ -16,10 +28,10 @@ void	parse_camera(t_state *state, char *line)
 		minirt_error(state, "Camera defined more than once\n");
 	state->flags |= FLAG_CAMERA_FOUND;
 	++line;
-	state->camera.pos = parse_vec3(state, &line);
-	state->camera.fwd = parse_orientation(state, &line);
-	state->camera.fov = parse_range_float(state, &line, 0.f, 180.f)
-			* PI / 180.f;
+	state->cam.pos = parse_vec3(state, &line);
+	state->cam.fwd = parse_orientation(state, &line);
+	state->cam.fov = parse_range_float(state, &line, 0.f, 180.f)
+		* PI / 180.f;
 }
 
 void	check_state(t_state *state)
@@ -47,16 +59,11 @@ int	parse_file(t_state *state, int fd)
 			parse_plane(state, line);
 		else if (ft_strncmp("cy ", line, 3) == 0)
 			parse_cylinder(state, line);
-		else if (*line == '#')
-		{}
 		else if (line[0] && line[0] != '\n')
-		{
-			free(line);
-			minirt_error(state, "Invalid scene object\n");
-		}
+			return (free(line),
+				minirt_error(state, "Invalid scene object\n"), 0);
 		free(line);
 		line = get_next_line(fd);
 	}
 	return (1);
 }
-

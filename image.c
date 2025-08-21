@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   image.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/21 12:54:24 by jbutragu          #+#    #+#             */
+/*   Updated: 2025/08/21 12:54:40 by jbutragu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	minirt_create_img(t_state *state)
@@ -20,7 +32,6 @@ void	img_put_pixel(t_image *img, unsigned int x, unsigned int y,
 	unsigned int	c;
 
 	c = (color.r << 16) + (color.g << 8) + color.b;
-
 	dst = img->addr + (y * img->line_length + x * (img->bpp / 8));
 	*(unsigned int *)dst = c;
 }

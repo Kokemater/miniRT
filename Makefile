@@ -8,6 +8,7 @@ SRC = main.c\
 	  image.c\
 	  intersections.c\
 	  intersections_scene.c\
+	  lighting.c\
 	  v3math.c\
 	  color.c\
 	  v3.c

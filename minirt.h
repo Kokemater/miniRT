@@ -133,7 +133,7 @@ typedef struct s_image
 typedef struct s_state
 {
 	t_ambient		ambient;
-	t_camera		camera;
+	t_camera		cam;
 	t_light_arr		lights;
 	t_sphere_arr		spheres;
 	t_plane_arr		planes;
@@ -177,7 +177,7 @@ void	img_put_pixel(t_image *img, unsigned int x, unsigned int y,
 
 float	v3dot(t_vec3 a, t_vec3 b);
 t_vec3	v3cross(t_vec3 a, t_vec3 b);
-t_vec3	v3normalize(t_vec3 a);
+t_vec3	v3norm(t_vec3 a);
 t_vec3	v3sub(t_vec3 a, t_vec3 b);
 t_vec3	v3add(t_vec3 a, t_vec3 b);
 t_vec3	v3mulf(t_vec3 a, float f);
@@ -190,5 +190,8 @@ t_hit_result	intersect_scene(t_ray *ray, t_state *state);
 t_hit_result	ray_cap_cylinder(t_cylinder *c, t_ray *r);
 t_hit_result	ray_plane(t_plane *p, t_ray *r);
 t_hit_result	ray_sphere(t_sphere *s, t_ray *r);
+
+t_color	ray_color(t_ray *ray, t_state *state);
+t_color	lighting(t_state *state, t_hit_result hit);
 
 #endif 

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_vec.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/21 12:39:52 by jbutragu          #+#    #+#             */
+/*   Updated: 2025/08/21 12:39:53 by jbutragu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 t_color	parse_color(t_state *state, char **line)
@@ -41,4 +53,3 @@ t_vec3	parse_orientation(t_state *state, char **line)
 		minirt_error(state, "Orientation is not normalized\n");
 	return (ret);
 }
-

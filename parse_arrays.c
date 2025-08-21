@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_arrays.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/21 12:42:24 by jbutragu          #+#    #+#             */
+/*   Updated: 2025/08/21 12:42:29 by jbutragu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minirt.h"
 
 void	parse_sphere(t_state *state, char *line)
@@ -45,4 +57,3 @@ void	parse_light(t_state *state, char *line)
 	l.color = parse_color(state, &line);
 	light_arr_add(state, l);
 }
-
