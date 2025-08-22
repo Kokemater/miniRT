@@ -56,7 +56,7 @@ clean:
 	make -C $(LIBFTDIR) clean
 
 fclean: clean
-	@rm -f $(NAME) $(NAME)_bonus
+	@rm -f $(NAME) $(NAME)_bonus $(MINILIBX) $(LIBFT)
 
 re: fclean $(NAME)
 

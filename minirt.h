@@ -143,6 +143,7 @@ typedef struct s_state
 	void    		*mlx;
 	void    		*win;
 	unsigned int		flags;
+	char			*fline;
 }   t_state;
 
 
@@ -185,6 +186,7 @@ t_vec3	v3mulf(t_vec3 a, float f);
 float	v3length2(t_vec3 a);
 
 t_color	colormulf(t_color a, float f);
+t_color	colormul(t_color a, t_color b);
 t_color	coloradd(t_color a, t_color b);
 
 t_hit_result	intersect_scene(t_ray *ray, t_state *state);

@@ -6,7 +6,7 @@
 /*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:42:39 by jbutragu          #+#    #+#             */
-/*   Updated: 2025/08/21 13:06:29 by jbutragu         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:17:51 by dmoraled         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,9 @@ t_color	lighting(t_state *state, t_hit_result hit)
 			if (ndotl < 0)
 				ndotl = 0;
 		}
-		color = coloradd(color, colormulf(
-					hit.c, ndotl * state->lights.arr[i].brightness));
+		color = coloradd(color, colormul(hit.c, colormulf(
+						state->lights.arr[i].color,
+						ndotl * state->lights.arr[i].brightness)));
 		++i;
 	}
 	return (color);

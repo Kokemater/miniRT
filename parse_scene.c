@@ -6,7 +6,7 @@
 /*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:40:05 by jbutragu          #+#    #+#             */
-/*   Updated: 2025/08/21 13:57:21 by jbutragu         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:08:00 by dmoraled         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,31 +54,28 @@ void	check_state(t_state *state)
 		minirt_error(state, "Camera not defined\n");
 }
 
-int	parse_file(t_state *state, int fd)
+int	parse_file(t_state *s, int fd)
 {
-	char	*line;
-
-	line = get_next_line(fd);
-	while (line)
+	s->fline = get_next_line(fd);
+	while (s->fline)
 	{
-		if (ft_strncmp("A ", line, 2) == 0)
-			parse_ambient(state, line);
-		else if (ft_strncmp("C ", line, 2) == 0)
-			parse_camera(state, line);
-		else if (ft_strncmp("L ", line, 2) == 0
-			|| ft_strncmp("l ", line, 2) == 0)
-			parse_light(state, line);
-		else if (ft_strncmp("sp ", line, 3) == 0)
-			parse_sphere(state, line);
-		else if (ft_strncmp("pl ", line, 3) == 0)
-			parse_plane(state, line);
-		else if (ft_strncmp("cy ", line, 3) == 0)
-			parse_cylinder(state, line);
-		else if (line[0] && line[0] != '\n')
-			return (free(line),
-				minirt_error(state, "Invalid scene object\n"), 0);
-		free(line);
-		line = get_next_line(fd);
+		if (ft_strncmp("A ", s->fline, 2) == 0)
+			parse_ambient(s, s->fline);
+		else if (ft_strncmp("C ", s->fline, 2) == 0)
+			parse_camera(s, s->fline);
+		else if (ft_strncmp("L ", s->fline, 2) == 0
+			|| ft_strncmp("l ", s->fline, 2) == 0)
+			parse_light(s, s->fline);
+		else if (ft_strncmp("sp ", s->fline, 3) == 0)
+			parse_sphere(s, s->fline);
+		else if (ft_strncmp("pl ", s->fline, 3) == 0)
+			parse_plane(s, s->fline);
+		else if (ft_strncmp("cy ", s->fline, 3) == 0)
+			parse_cylinder(s, s->fline);
+		else if (s->fline[0] && s->fline[0] != '\n')
+			minirt_error(s, "Invalid scene object\n");
+		free(s->fline);
+		s->fline = get_next_line(fd);
 	}
 	return (1);
 }

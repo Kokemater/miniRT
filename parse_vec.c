@@ -6,7 +6,7 @@
 /*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:39:52 by jbutragu          #+#    #+#             */
-/*   Updated: 2025/08/21 13:24:50 by jbutragu         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:04:27 by dmoraled         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,26 @@ t_color	parse_color(t_state *state, char **line)
 {
 	t_color	ret;
 
+	while (**line == ' ')
+		++(*line);
+	if (!ft_isdigit(**line))
+		minirt_error(state, "Invalid color format\n");
 	ret.r = ft_atoc(line);
 	if (**line != ',')
 		minirt_error(state, "Invalid color format\n");
 	++(*line);
+	while (**line == ' ')
+		++(*line);
+	if (!ft_isdigit(**line))
+		minirt_error(state, "Invalid color format\n");
 	ret.g = ft_atoc(line);
 	if (**line != ',')
 		minirt_error(state, "Invalid color format\n");
 	++(*line);
+	while (**line == ' ')
+		++(*line);
+	if (!ft_isdigit(**line))
+		minirt_error(state, "Invalid color format\n");
 	ret.b = ft_atoc(line);
 	return (ret);
 }

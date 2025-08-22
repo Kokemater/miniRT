@@ -6,7 +6,7 @@
 /*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:54:07 by jbutragu          #+#    #+#             */
-/*   Updated: 2025/08/21 12:54:16 by jbutragu         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:08:01 by dmoraled         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,14 @@ void	minirt_cleanup(t_state *state)
 		free(state->cylinders.arr);
 	if (state->lights.arr)
 		free(state->lights.arr);
-	if (!state->mlx)
-		return ;
+	if (state->fline)
+		free(state->fline);
 	if (state->img.handle)
 		mlx_destroy_image(state->mlx, state->img.handle);
 	if (state->win)
 		mlx_destroy_window(state->mlx, state->win);
+	if (!state->mlx)
+		return ;
 	mlx_destroy_display(state->mlx);
 	free(state->mlx);
 }

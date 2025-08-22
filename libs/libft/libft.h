@@ -6,7 +6,7 @@
 /*   By: dmoraled <dmoraled@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/16 16:56:25 by dmoraled          #+#    #+#             */
-/*   Updated: 2025/02/25 12:20:47 by dmoraled         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:08:12 by dmoraled         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define LIBFT_H
 
 # ifndef GNL_BUFFER_SIZE
-#  define GNL_BUFFER_SIZE 32
+#  define GNL_BUFFER_SIZE 1
 # endif
 
 # include <stddef.h>

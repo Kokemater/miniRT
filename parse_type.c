@@ -6,10 +6,11 @@
 /*   By: jbutragu <jbutragu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/21 12:33:52 by jbutragu          #+#    #+#             */
-/*   Updated: 2025/08/21 13:23:47 by jbutragu         ###   ########.fr       */
+/*   Updated: 2025/08/22 16:05:55 by dmoraled         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libs/libft/libft.h"
 #include "minirt.h"
 
 char	ft_atoc(char **s)
@@ -78,6 +79,10 @@ float	parse_range_float(t_state *state, char **line, float min, float max)
 {
 	float	f;
 
+	while (**line == ' ')
+		++(*line);
+	if (!ft_isdigit(**line) && **line != '-' && **line != '.')
+		minirt_error(state, "Invalid float format\n");
 	f = ft_atof(line);
 	if (isnan(f))
 		minirt_error(state, "Invalid float format\n");
